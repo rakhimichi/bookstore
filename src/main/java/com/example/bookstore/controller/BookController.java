@@ -1,11 +1,13 @@
 package com.example.bookstore.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.bookstore.domain.Book;
 import com.example.bookstore.repository.BookRepository;
@@ -22,7 +24,9 @@ public class BookController {
     this.categoryRepository = categoryRepository;
   }
 
-  @RequestMapping(value = {"/", "/booklist"})
+  // ---------- MVC (HTML pages) ----------
+
+  @RequestMapping(value = { "/", "/booklist" })
   public String bookList(Model model) {
     model.addAttribute("books", bookRepository.findAll());
     return "booklist";
@@ -38,7 +42,9 @@ public class BookController {
   @GetMapping("/edit/{id}")
   public String editBook(@PathVariable Long id, Model model) {
     Book book = bookRepository.findById(id).orElse(null);
-    if (book == null) return "redirect:/booklist";
+    if (book == null) {
+      return "redirect:/booklist";
+    }
     model.addAttribute("book", book);
     model.addAttribute("categories", categoryRepository.findAll());
     return "bookform";
@@ -54,6 +60,22 @@ public class BookController {
   public String delete(@PathVariable Long id) {
     bookRepository.deleteById(id);
     return "redirect:/booklist";
+  }
+
+  // ---------- REST (JSON) ----------
+
+  // a) REST service that return all books (JSON)
+  @GetMapping("/books")
+  public @ResponseBody Iterable<Book> bookListRest() {
+    return bookRepository.findAll();
+  }
+
+  // b) REST service that return one book by id (JSON)
+  @GetMapping("/book/{id}")
+  public ResponseEntity<Book> findBookRest(@PathVariable Long id) {
+    return bookRepository.findById(id)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
   }
 }
 
