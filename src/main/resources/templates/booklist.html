@@ -5,7 +5,19 @@
   <title>Book list</title>
 </head>
 <body>
-  <h1>Books</h1>
+
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h1>Books</h1>
+
+    <div>
+      <span>Logged in as: <b th:text="${username}">username</b></span>
+
+      <form th:action="@{/logout}" method="post" style="display:inline; margin-left:12px;">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <button type="submit">Logout</button>
+      </form>
+    </div>
+  </div>
 
   <p><a th:href="@{/add}">Add new book</a></p>
 
@@ -30,8 +42,10 @@
         <td th:text="${book.price}"></td>
         <td th:text="${book.category != null ? book.category.name : ''}"></td>
         <td>
-          <a th:href="@{/delete/{id}(id=${book.id})}">Delete</a>
-          |
+          <span th:if="${isAdmin}">
+            <a th:href="@{/delete/{id}(id=${book.id})}">Delete</a>
+            |
+          </span>
           <a th:href="@{/edit/{id}(id=${book.id})}">Edit</a>
         </td>
       </tr>
@@ -39,7 +53,6 @@
   </table>
 </body>
 </html>
-
 
 
 

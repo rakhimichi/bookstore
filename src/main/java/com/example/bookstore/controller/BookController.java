@@ -1,6 +1,7 @@
 package com.example.bookstore.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,9 +28,28 @@ public class BookController {
   // ---------- MVC (HTML pages) ----------
 
   @RequestMapping(value = { "/", "/booklist" })
-  public String bookList(Model model) {
+  public String bookList(Model model, Authentication authentication) {
     model.addAttribute("books", bookRepository.findAll());
+
+    // default values (in practice, this page requires authentication)
+    model.addAttribute("username", "");
+    model.addAttribute("isAdmin", false);
+
+    // Show username and "isAdmin" flag on the page
+    if (authentication != null) {
+      model.addAttribute("username", authentication.getName());
+      boolean isAdmin = authentication.getAuthorities().stream()
+          .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+      model.addAttribute("isAdmin", isAdmin);
+    }
+
     return "booklist";
+  }
+
+  // Custom login page
+  @GetMapping("/login")
+  public String login() {
+    return "login";
   }
 
   @GetMapping("/add")
@@ -64,13 +84,11 @@ public class BookController {
 
   // ---------- REST (JSON) ----------
 
-  // a) REST service that return all books (JSON)
   @GetMapping("/books")
   public @ResponseBody Iterable<Book> bookListRest() {
     return bookRepository.findAll();
   }
 
-  // b) REST service that return one book by id (JSON)
   @GetMapping("/book/{id}")
   public ResponseEntity<Book> findBookRest(@PathVariable Long id) {
     return bookRepository.findById(id)
