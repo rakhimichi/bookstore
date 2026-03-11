@@ -40,6 +40,7 @@
       <artifactId>spring-boot-starter-data-rest</artifactId>
     </dependency>
 
+    <!-- H2 Console -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-h2console</artifactId>
@@ -75,14 +76,19 @@
     <!-- Tests -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
+      <artifactId>spring-boot-starter-webmvc-test</artifactId>
       <scope>test</scope>
     </dependency>
 
-    <!-- Optional: helps if you later write security tests -->
     <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-test</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security-test</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
